@@ -87,9 +87,11 @@ class CardDrawable extends Drawable {
         int alpha = paint.getAlpha();
 
         /* Draw border or background. */
-        paint.setColor(Color.DKGRAY);
+        //paint.setColor(Color.DKGRAY);
+        paint.setColor(Color.WHITE);
         paint.setAlpha(alpha);
-        paint.setStyle(Paint.Style.STROKE);
+        //paint.setStyle(Paint.Style.STROKE);
+        paint.setStyle(Paint.Style.FILL);
         canvas.drawRect(b, paint);
 
         /* Pick a color. */
