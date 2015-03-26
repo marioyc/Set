@@ -8,9 +8,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.set.MainActivity" >
 
-    <TableLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
         <TableRow
             android:id="@+id/tableRow1"
@@ -20,22 +21,26 @@
             <ImageView
                 android:id="@+id/imageView1"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
             
         </TableRow>
 
@@ -47,22 +52,26 @@
             <ImageView
                 android:id="@+id/imageView5"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView6"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView7"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView8"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
         </TableRow>
 
@@ -74,22 +83,26 @@
             <ImageView
                 android:id="@+id/imageView9"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView10"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView11"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView12"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
         </TableRow>
 
@@ -101,24 +114,91 @@
             <ImageView
                 android:id="@+id/imageView13"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView14"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
             <ImageView
                 android:id="@+id/imageView15"
                 android:layout_width="60dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:padding="2.5dp" />
 
-            <ImageView
-                android:id="@+id/imageView16"
-                android:layout_width="60dp"
-                android:layout_height="100dp" />
+
+             <LinearLayout
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:orientation="vertical" >
+
+                 <TableRow
+                     android:id="@+id/tableRow5"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content" >
+                     
+		              <TextView
+		                  android:id="@+id/textView1"
+		                  android:layout_width="60dp"
+		                  android:layout_height="wrap_content"
+		                  android:text="" />
+                 </TableRow>
+
+                 <TableRow
+                     android:id="@+id/tableRow6"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content" >
+                     
+		             <Chronometer
+		                 android:id="@+id/chronometer1"
+		                 android:layout_width="60dp"
+		                 android:layout_height="wrap_content"
+		                 android:text="Chronometer" />
+                 </TableRow>
+                 
+                 <TableRow
+                     android:id="@+id/tableRow7"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content" >
+
+                     <ImageView
+                         android:id="@+id/imageView16"
+                         android:layout_width="20dp"
+                         android:layout_height="50dp"
+                         android:src="@drawable/abc_ab_share_pack_holo_dark" />
+
+                     <ImageView
+                         android:id="@+id/imageView17"
+                         android:layout_width="20dp"
+                         android:layout_height="50dp"
+                         android:src="@drawable/abc_ab_share_pack_holo_dark" />
+
+                     <ImageView
+                         android:id="@+id/imageView18"
+                         android:layout_width="20dp"
+                         android:layout_height="50dp"
+                         android:src="@drawable/abc_ab_share_pack_holo_dark" />
+                 </TableRow>
+             </LinearLayout>
+
 
         </TableRow>
-    </TableLayout>
+                 
+         <TableRow
+             android:id="@+id/tableRow9"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content" >
+
+             <TextView
+		        android:id="@+id/textView2"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="" />
+         </TableRow>
+    </LinearLayout>
+    
 
 </RelativeLayout>

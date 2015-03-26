@@ -1,17 +1,23 @@
 package com.set;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import android.support.v7.app.ActionBarActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.util.Collections;
 
@@ -28,6 +34,12 @@ public class MainActivity extends ActionBarActivity {
 	int id[] = new int[3];
 	
 	public Handler handler = new Handler();
+	
+	Chronometer chrono;
+	boolean started = false;
+	TextView scoreText,endText;
+	int score = 0;
+	ImageView scoreImage[] = new ImageView[3];
 	
 	boolean test(int val[], int n){
 		for(int i = 0;i < n;++i)
@@ -56,10 +68,45 @@ public class MainActivity extends ActionBarActivity {
 			cards[i].setImageResource(android.R.color.transparent);
 	}
 	
+	void endGame(){
+		chrono.stop();
+		endText.setText("Fin du jeu");
+	}
+	
+	class Client extends Thread{
+		
+		public void run(){
+			try {
+				Socket s = new Socket("129.104.217.5", 7777);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	};
+	
+	Client client = new Client();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//client.start();
+		
 		setContentView(R.layout.activity_main);
+		
+		chrono = (Chronometer)findViewById(R.id.chronometer1);
+		scoreText = (TextView)findViewById(R.id.textView1);
+		scoreText.setText("Score : " + 0);
+
+		scoreImage[0] = (ImageView)findViewById(R.id.imageView16);
+		scoreImage[1] = (ImageView)findViewById(R.id.imageView17);
+		scoreImage[2] = (ImageView)findViewById(R.id.imageView18);
+		
+		endText = (TextView)findViewById(R.id.textView2);
 		
 		deck = new ArrayList<Integer>();
 		
@@ -108,6 +155,12 @@ public class MainActivity extends ActionBarActivity {
 		        public void onClick(View v) {
 		        	if(i2 >= N || active[i2]) return;
 		        	
+		        	if(!started){
+		        		chrono.setBase(SystemClock.elapsedRealtime());
+		        		chrono.start();
+		        		started = true;
+		        	}
+		        	
 		        	System.out.println("cont = " + cont);
 		        	
 		        	if(!marked[i2]){
@@ -128,8 +181,11 @@ public class MainActivity extends ActionBarActivity {
 		                		for(int k = 0;k < 3;++k){
 		                			cards[ id[k] ].setColorFilter(Color.argb(100, 0, 200, 0));
 		                			active[ id[k] ] = true;
+		                			scoreImage[k].setImageDrawable(new CardDrawable(value[ id[k] ]));
 		                		}
 		                		N -= 3;
+	                			score++;
+	                			scoreText.setText("Score : " + score);
 		                		
 		                		handler.postDelayed(new Runnable(){
 		                			public void run(){
@@ -161,6 +217,7 @@ public class MainActivity extends ActionBarActivity {
 			                					
 			                					if(!test(value,N)){
 			                						//TODO:finir le jeu
+			                						endGame();
 			                					}
 			                				}
 				                		}else if(posDeck == 81){
@@ -168,8 +225,8 @@ public class MainActivity extends ActionBarActivity {
 				                			
 				                			if(!test(value,N)){
 				                				//TODO:finir le jeu
+				                				endGame();
 				                			}
-				                			// TODO: supprimer
 				                		}
 		                			}
 		                		}, 500);
@@ -179,6 +236,9 @@ public class MainActivity extends ActionBarActivity {
 		                			cards[ id[k] ].setColorFilter(Color.argb(100, 200, 0, 0));
 		                			active[ id[k] ] = true;
 		                		}
+
+	                			score--;
+	                			scoreText.setText("Score : " + score);
 		                		
 	                			handler.postDelayed(new Runnable(){
 	                				public void run(){
