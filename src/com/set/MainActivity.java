@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.support.v7.app.ActionBarActivity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,15 +16,18 @@ import android.widget.TableRow;
 import java.util.Collections;
 
 public class MainActivity extends ActionBarActivity {
-	private ImageView[] cards;
-	private TableRow[] rows;
-	private boolean[] marked;
-	private int[] value;
+	private ImageView[] cards = new ImageView[16];
+	private TableRow[] rows = new TableRow[4];
+	private boolean[] marked = new boolean[16];
+	private boolean[] active = new boolean[16];
+	private int[] value = new int[15];
 	int cont = 0;
-	//private int[] deck;
 	int N;
-	ArrayList<Integer> aux;
-	int posAux;
+	ArrayList<Integer> deck;
+	int posDeck;
+	int id[] = new int[3];
+	
+	public Handler handler = new Handler();
 	
 	boolean test(int val[], int n){
 		for(int i = 0;i < n;++i)
@@ -57,38 +61,28 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		//deck = new int[81];
-		aux = new ArrayList<Integer>();
+		deck = new ArrayList<Integer>();
 		
 		for(int i = 0;i < 3;++i)
 			for(int j = 0;j < 3;++j)
 				for(int k = 0;k < 3;++k)
 					for(int l = 0;l < 3;++l)
-						//deck[i + 3 * j + 9 * k + 27 * l] = Cards.valueOf(1 + i, 1 + j, 1 + k, 1 + l);
-						aux.add(Cards.valueOf(1 + i, 1 + j, 1 + k, 1 + l));
+						deck.add(Cards.valueOf(1 + i, 1 + j, 1 + k, 1 + l));
 		
 		N = 12;
+		posDeck = 12;
 		
 		boolean ok = false;
 		
-		value = new int[15];
-		
 		while(!ok){
-			Collections.shuffle(aux);
+			Collections.shuffle(deck);
 			
 			for(int i = 0;i < N;++i)
-				//value[i] = deck[ aux.get(i) ];
-				value[i] = aux.get(i);
+				value[i] = deck.get(i);
 			
 			if(test(value,N))
 				ok = true;
 		}
-		
-		posAux = 12;
-		
-		rows = new TableRow[4];
-		cards = new ImageView[16];
-		marked = new boolean[16];
 		
 		rows[0] = (TableRow)findViewById(R.id.tableRow1);
 		rows[1] = (TableRow)findViewById(R.id.tableRow2);
@@ -112,16 +106,17 @@ public class MainActivity extends ActionBarActivity {
 			cards[i].setOnClickListener(new OnClickListener () {
 		        @Override
 		        public void onClick(View v) {
-		        	if(i2 >= N) return;
+		        	if(i2 >= N || active[i2]) return;
 		        	
-		        	//System.out.println("cont = " + cont);
+		        	System.out.println("cont = " + cont);
+		        	
 		        	if(!marked[i2]){
 		                cards[i2].setColorFilter(Color.argb(50, 0, 0, 0));
 		                marked[i2] = true;
 		                ++cont;
 		                
 		                if(cont == 3){
-		                	int id[] = new int[3],pos = 0;
+		                	int pos = 0;
 		                	
 		                	for(int k = 0;k < N;++k){
 		                		if(marked[k]){
@@ -130,71 +125,71 @@ public class MainActivity extends ActionBarActivity {
 		                	}
 		                	
 		                	if(Cards.isSet(value[ id[0] ], value[ id[1] ], value[ id[2] ])){
-		                		for(int k = 0;k < 3;++k)
-		                			cards[ id[k] ].setColorFilter(Color.GREEN);
+		                		for(int k = 0;k < 3;++k){
+		                			cards[ id[k] ].setColorFilter(Color.argb(100, 0, 200, 0));
+		                			active[ id[k] ] = true;
+		                		}
 		                		N -= 3;
 		                		
-		                		// TODO: Sleep
-		                		
-		                		for(int k = 0;k < 3;++k){
-                					cards[ id[k] ].setColorFilter(Color.argb(0, 0, 0, 0));
-                					//marked[ id[k] ] = false;
-                					--cont;
-		                		}
-		                		
-		                		//setImageResource(android.R.color.transparent);
-		                		if(N == 12)
-		                			cleanCards(15);
-		                		
-		                		if((N == 9 && 81 - posAux >= 3) || (N == 12 && !test(value,N))){
-		                			// N == 9
-	                				for(int k = 0;k < 3;++k){
-	                					value[ id[k] ] = aux.get(posAux); posAux++;
-	                					cards[ id[k] ].setImageDrawable(new CardDrawable(value[ id[k] ]));
-	                					marked[ id[k] ] = false;
-	                					//System.out.println(value[ id[k] ]);
-	                					/*cards[ id[k] ].setImageDrawable(new CardDrawable(value[ id[k] ]));
-	                					cards[ id[k] ].setColorFilter(Color.argb(0, 0, 0, 0));
-	                					marked[ id[k] ] = false;
-	                					--cont;*/
-	                				}
-	                				
-	                				N += 3;
-	                					
-	                				if(!test(value,N) && 81 - posAux >= 3){
-	                					for(int k = 0;k < 3;++k){
-	                						value[12 + k] = aux.get(posAux); posAux++;
-	                						cards[12 + k].setImageDrawable(new CardDrawable(value[12 + k]));
-	                					}
-	                					
-	                					N += 3;
-	                					
-	                					if(!test(value,N)){
-	                						//TODO:finir le jeu
-	                					}
-	                				}
-		                		}else if(posAux == 81){
-		                			cleanCards(N + 3);
-		                			
-		                			if(!test(value,N)){
-		                				//TODO:finir le jeu
+		                		handler.postDelayed(new Runnable(){
+		                			public void run(){
+		                				for(int k = 0;k < 3;++k){
+		                					cards[ id[k] ].setColorFilter(Color.argb(0, 0, 0, 0));
+		                					active[ id[k] ] = false;
+		                					--cont;
+				                		}
+		                				
+		                				if(N == 12)
+				                			cleanCards(15);
+				                		
+				                		if((N == 9 && 81 - posDeck >= 3) || (N == 12 && !test(value,N))){
+			                				for(int k = 0;k < 3;++k){
+			                					value[ id[k] ] = deck.get(posDeck); posDeck++;
+			                					cards[ id[k] ].setImageDrawable(new CardDrawable(value[ id[k] ]));
+			                					marked[ id[k] ] = false;
+			                				}
+			                				
+			                				N += 3;
+			                					
+			                				if(!test(value,N) && 81 - posDeck >= 3){
+			                					for(int k = 0;k < 3;++k){
+			                						value[12 + k] = deck.get(posDeck); posDeck++;
+			                						cards[12 + k].setImageDrawable(new CardDrawable(value[12 + k]));
+			                					}
+			                					
+			                					N += 3;
+			                					
+			                					if(!test(value,N)){
+			                						//TODO:finir le jeu
+			                					}
+			                				}
+				                		}else if(posDeck == 81){
+				                			cleanCards(N + 3);
+				                			
+				                			if(!test(value,N)){
+				                				//TODO:finir le jeu
+				                			}
+				                			// TODO: supprimer
+				                		}
 		                			}
-		                			// TODO: supprimer
-		                		}
+		                		}, 500);
+		                		
 		                	}else{
 		                		for(int k = 0;k < 3;++k){
-		                			final int cardId = id[k];
-		                			
-		                			cards[cardId].setColorFilter(Color.argb(100, 200, 0, 0));
-		                			
-		                			cards[cardId].postDelayed(new Runnable(){
-		                				public void run(){
-		                					cards[cardId].setColorFilter(Color.argb(0, 0, 0, 0));
-		                					marked[cardId] = false;
-		                					--cont;
-		                				}
-		                			}, 500);
+		                			cards[ id[k] ].setColorFilter(Color.argb(100, 200, 0, 0));
+		                			active[ id[k] ] = true;
 		                		}
+		                		
+	                			handler.postDelayed(new Runnable(){
+	                				public void run(){
+	                					for(int k = 0;k < 3;++k){
+		                					cards[ id[k] ].setColorFilter(Color.argb(0, 0, 0, 0));
+		                					marked[ id[k] ] = false;
+		                					active[ id[k] ] = false;
+		                					--cont;
+	                					}
+	                				}
+	                			}, 500);
 		                	}
 		                }
 		        	}else{
