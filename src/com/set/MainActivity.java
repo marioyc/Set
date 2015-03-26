@@ -183,22 +183,18 @@ public class MainActivity extends ActionBarActivity {
 		                		}
 		                	}else{
 		                		for(int k = 0;k < 3;++k){
-		                			cards[ id[k] ].setColorFilter(Color.RED);
-		                			cards[ id[k] ].refreshDrawableState();
+		                			final int cardId = id[k];
+		                			
+		                			cards[cardId].setColorFilter(Color.RED);
+		                			
+		                			cards[cardId].postDelayed(new Runnable(){
+		                				public void run(){
+		                					cards[cardId].setColorFilter(Color.argb(0, 0, 0, 0));
+		                					marked[cardId] = false;
+		                					--cont;
+		                				}
+		                			}, 500);
 		                		}
-		                		
-		                		/*try {
-									Thread.sleep(1000);
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-		                		
-		                		for(int k = 0;k < 3;++k){
-		                			cards[ id[k] ].setColorFilter(Color.argb(0, 0, 0, 0));
-		                			marked[ id[k] ] = false;
-		                			--cont;
-		                		}*/
 		                	}
 		                }
 		        	}else{
