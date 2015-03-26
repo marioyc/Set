@@ -185,7 +185,7 @@ public class MainActivity extends ActionBarActivity {
 		                		for(int k = 0;k < 3;++k){
 		                			final int cardId = id[k];
 		                			
-		                			cards[cardId].setColorFilter(Color.RED);
+		                			cards[cardId].setColorFilter(Color.argb(100, 200, 0, 0));
 		                			
 		                			cards[cardId].postDelayed(new Runnable(){
 		                				public void run(){
