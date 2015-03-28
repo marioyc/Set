@@ -77,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
 		
 		public void run(){
 			try {
-				Socket s = new Socket("129.104.217.5", 7777);
+				Socket s = new Socket("10.0.2.2", 7777);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -94,7 +94,7 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		//client.start();
+		client.start();
 		
 		setContentView(R.layout.activity_main);
 		
