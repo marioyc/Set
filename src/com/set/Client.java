@@ -74,6 +74,7 @@ class Client extends Thread{
 				        	
 				        	if(!main.marked[i2]){
 				        		main.cards[i2].setColorFilter(Color.argb(50, 0, 0, 0));
+				        		main.cards[i2].invalidate();
 				        		main.marked[i2] = true;
 				                ++main.cont;
 				                
@@ -109,8 +110,9 @@ class Client extends Thread{
 											}
 										}
 									}
-									
+									System.out.println("create getResult");
 									getResult t = new getResult(result,in);
+									System.out.println("get Result");
 									t.start();
 									try {
 										t.join();
@@ -203,8 +205,25 @@ class Client extends Thread{
 				                			}
 				                		}, 500);
 				                	}else if(tokens[0].equals("CONTINUE")){
+				                		for(int i = 0;i < main.N;++i)
+				                			if(main.marked[i]){
+				                				main.cards[i].setColorFilter(Color.argb(100, 200, 0, 0));
+				                				main.active[i] = true;
+				                			}
+				                		
 				                		sc1 = -1;
 				                		sc2 = -1;
+				                		
+				                		handler.postDelayed(new Runnable(){
+				                			public void run(){
+				                				for(int i = 0;i < main.N;++i){
+				                					if(main.active[i]){
+					                					main.cards[i].setColorFilter(Color.argb(0, 0, 0, 0));
+					                					main.active[i] = false;
+				                					}
+				                				}
+				                			}
+				                		}, 500);
 				                	}
 				                	//System.out.println(sc1 + " " + sc2);
 				                	
