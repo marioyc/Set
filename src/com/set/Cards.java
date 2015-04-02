@@ -1,5 +1,9 @@
 package com.set;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
+
 /**
  * A Set! card is defined by its four characteristics: number, color,
  * filling and shape, any of which may take a value between 1 and 3.
@@ -85,5 +89,42 @@ class Cards {
             c >>= 2;
         }
         return true;
+    }
+    
+	static boolean test(int val[], int n){
+		for(int i = 0;i < n;++i)
+			for(int j = i + 1;j < n;++j)
+				for(int k = j + 1;k < n;++k)
+					if(Cards.isSet(val[i], val[j], val[k])){
+						System.out.println(i + " " + j + " " + k);
+						return true;
+					}
+		System.out.println("Fin");
+		return false;
+	}
+    
+    static ArrayList<Integer> generateDeck(){
+    	ArrayList<Integer> deck = new ArrayList<Integer>();
+    	
+    	for(int i = 1;i <= 3;++i)
+			for(int j = 1;j <= 3;++j)
+				for(int k = 1;k <= 3;++k)
+					for(int l = 1;l <= 3;++l)
+						deck.add(valueOf(i,j,k,l));
+    	
+    	boolean ok = false;
+    	int value[] = new int[12];
+    	
+    	while(!ok){
+			Collections.shuffle(deck);
+			
+			for(int i = 0;i < 12;++i)
+				value[i] = deck.get(i);
+			
+			if(test(value,12))
+				ok = true;
+		}
+    	
+    	return deck;
     }
 }

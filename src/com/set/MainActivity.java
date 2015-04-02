@@ -1,15 +1,12 @@
 package com.set;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import android.support.v7.app.ActionBarActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,39 +16,25 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.util.Collections;
-
 public class MainActivity extends ActionBarActivity {
-	private ImageView[] cards = new ImageView[16];
-	private TableRow[] rows = new TableRow[4];
-	private boolean[] marked = new boolean[16];
-	private boolean[] active = new boolean[16];
-	private int[] value = new int[15];
-	int cont = 0;
-	int N;
+	public ImageView[] cards = new ImageView[16];
+	public TableRow[] rows = new TableRow[4];
+	public boolean[] marked = new boolean[16];
+	public boolean[] active = new boolean[16];
+	public int[] value = new int[15];
+	public int cont = 0;
+	public int N;
 	ArrayList<Integer> deck;
-	int posDeck;
-	int id[] = new int[3];
+	public int posDeck;
+	public int id[] = new int[3];
 	
 	public Handler handler = new Handler();
 	
 	Chronometer chrono;
 	boolean started = false;
 	TextView scoreText,endText;
-	int score = 0;
+	public int score = 0,score2 = 0;
 	ImageView scoreImage[] = new ImageView[3];
-	
-	boolean test(int val[], int n){
-		for(int i = 0;i < n;++i)
-			for(int j = i + 1;j < n;++j)
-				for(int k = j + 1;k < n;++k)
-					if(Cards.isSet(val[i], val[j], val[k])){
-						System.out.println(i + " " + j + " " + k);
-						return true;
-					}
-		System.out.println("Fin");
-		return false;
-	}
 	
 	void cleanCards(int n){
 		for(int i = 0,j = 0;i < n;++i){
@@ -73,68 +56,60 @@ public class MainActivity extends ActionBarActivity {
 		endText.setText("Fin du jeu");
 	}
 	
-	class Client extends Thread{
-		
-		public void run(){
-			try {
-				Socket s = new Socket("10.0.2.2", 7777);
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	};
-	
-	Client client = new Client();
+	Client client;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		client.start();
-		
 		setContentView(R.layout.activity_main);
 		
 		chrono = (Chronometer)findViewById(R.id.chronometer1);
 		scoreText = (TextView)findViewById(R.id.textView1);
-		scoreText.setText("Score : " + 0);
-
+		
 		scoreImage[0] = (ImageView)findViewById(R.id.imageView16);
 		scoreImage[1] = (ImageView)findViewById(R.id.imageView17);
 		scoreImage[2] = (ImageView)findViewById(R.id.imageView18);
 		
 		endText = (TextView)findViewById(R.id.textView2);
 		
-		deck = new ArrayList<Integer>();
-		
-		for(int i = 0;i < 3;++i)
-			for(int j = 0;j < 3;++j)
-				for(int k = 0;k < 3;++k)
-					for(int l = 0;l < 3;++l)
-						deck.add(Cards.valueOf(1 + i, 1 + j, 1 + k, 1 + l));
-		
-		N = 12;
-		posDeck = 12;
-		
-		boolean ok = false;
-		
-		while(!ok){
-			Collections.shuffle(deck);
-			
-			for(int i = 0;i < N;++i)
-				value[i] = deck.get(i);
-			
-			if(test(value,N))
-				ok = true;
-		}
-		
 		rows[0] = (TableRow)findViewById(R.id.tableRow1);
 		rows[1] = (TableRow)findViewById(R.id.tableRow2);
 		rows[2] = (TableRow)findViewById(R.id.tableRow3);
 		rows[3] = (TableRow)findViewById(R.id.tableRow4);
+		
+		startSolo();
+	}
+	
+	public void clean(){
+		started = false;
+		score = 0;
+		score2 = 0;
+		posDeck = 0;
+		
+		scoreImage[0].setImageResource(android.R.color.transparent);
+		scoreImage[1].setImageResource(android.R.color.transparent);
+		scoreImage[2].setImageResource(android.R.color.transparent);
+		
+		chrono.stop();
+		chrono.setBase(SystemClock.elapsedRealtime());
+		chrono.start();
+		chrono.stop();
+		
+		int it = N / 3;
+		
+		for(int i = 0;i < it;++i)
+			cleanCards(N - 3 * i);
+		
+		for(int i = 0;i < 15;++i){
+			marked[i] = false;
+			active[i] = false;
+		}
+	}
+	
+	public void paintCards(ArrayList<Integer> deck){
+		for(int i = 0;i < N;++i)
+			value[i] = deck.get(i);
 		
 		for(int i = 0;i < 4;++i){
 			for(int j = 0;j < 4;++j){
@@ -146,6 +121,16 @@ public class MainActivity extends ActionBarActivity {
 			
 			}
 		}
+	}
+
+	void startSolo(){
+		scoreText.setText("Score : " + 0);
+		
+		deck = Cards.generateDeck();
+		N = 12;
+		posDeck = 12;
+		
+		paintCards(deck);
 		
 		for(int i = 0;i < 15;++i){
 			final int i2 = i;
@@ -198,7 +183,7 @@ public class MainActivity extends ActionBarActivity {
 		                				if(N == 12)
 				                			cleanCards(15);
 				                		
-				                		if((N == 9 && 81 - posDeck >= 3) || (N == 12 && !test(value,N))){
+				                		if((N == 9 && 81 - posDeck >= 3) || (N == 12 && !Cards.test(value,N))){
 			                				for(int k = 0;k < 3;++k){
 			                					value[ id[k] ] = deck.get(posDeck); posDeck++;
 			                					cards[ id[k] ].setImageDrawable(new CardDrawable(value[ id[k] ]));
@@ -207,7 +192,7 @@ public class MainActivity extends ActionBarActivity {
 			                				
 			                				N += 3;
 			                					
-			                				if(!test(value,N) && 81 - posDeck >= 3){
+			                				if(!Cards.test(value,N) && 81 - posDeck >= 3){
 			                					for(int k = 0;k < 3;++k){
 			                						value[12 + k] = deck.get(posDeck); posDeck++;
 			                						cards[12 + k].setImageDrawable(new CardDrawable(value[12 + k]));
@@ -215,7 +200,7 @@ public class MainActivity extends ActionBarActivity {
 			                					
 			                					N += 3;
 			                					
-			                					if(!test(value,N)){
+			                					if(!Cards.test(value,N)){
 			                						//TODO:finir le jeu
 			                						endGame();
 			                					}
@@ -223,7 +208,7 @@ public class MainActivity extends ActionBarActivity {
 				                		}else if(posDeck == 81){
 				                			cleanCards(N + 3);
 				                			
-				                			if(!test(value,N)){
+				                			if(!Cards.test(value,N)){
 				                				//TODO:finir le jeu
 				                				endGame();
 				                			}
@@ -261,7 +246,12 @@ public class MainActivity extends ActionBarActivity {
 		   });
 		}
 	}
-
+	
+	void startMulti(){
+		client = new Client(this,handler);
+		client.start();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -282,6 +272,17 @@ public class MainActivity extends ActionBarActivity {
 			finish();
 			return true;
 		}
+		
+		if(id == R.id.action_solo){
+			clean();
+			startSolo();
+		}
+		
+		if(id == R.id.action_multi){
+			clean();
+			startMulti();
+		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 }
