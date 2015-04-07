@@ -10,43 +10,74 @@ import java.util.Arrays;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 class Client extends Thread{
 	MainActivity main;
+	Socket s;
+	BufferedReader in;
+	PrintWriter out;
 	
 	Client(MainActivity main){
 		this.main = main;
 	}
 	
+	void serverOff(){
+		main.handler.post(new Runnable(){
+			public void run(){
+		    	new AlertDialog.Builder(main)
+		        .setTitle("Notification")
+		        .setMessage("Could not connect to server. Change to solo mode?")
+		        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface dialog, int which) {
+		            	main.clean();
+		            	main.startSolo();
+		            }
+		         })
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .show();
+			}
+		});
+	}
+	
 	public void run(){
-		Socket s = Net.establishConnection("10.0.2.2", 7777);
-		final BufferedReader in = Net.connectionIn(s);
-		final PrintWriter out = Net.connectionOut(s);
+		try {
+			s = Net.establishConnection("10.0.2.2", 7777);
+			in = Net.connectionIn(s);
+			out = Net.connectionOut(s);
+		} catch(RuntimeException e) {
+			serverOff();
+			return;
+		}
 		
 		System.out.println("Connected!");
 		
 		ArrayList<Integer> deck = new ArrayList<Integer>();
+		String aux = "";
 		
 		try {
-			final String aux = in.readLine();
-			
-			ArrayList<String> list = new ArrayList<String>(Arrays.asList(aux.split(" ")));
-			
-			for(String x : list){
-				deck.add(Integer.parseInt(x));
-			}
-			
-			main.N = 12;
-			main.posDeck = 12;
-			main.deck = deck;
+			aux = in.readLine();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		if(aux == null){
+			serverOff();
+			return;
+		}
+		
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(aux.split(" ")));
+		
+		for(String x : list){
+			deck.add(Integer.parseInt(x));
+		}
+		
+		main.N = 12;
+		main.posDeck = 12;
+		main.deck = deck;
 		
 		main.handler.post(new Runnable(){
 			public void run(){
