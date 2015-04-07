@@ -42,13 +42,11 @@ public class MainActivity extends ActionBarActivity {
 	boolean end;
 	
 	void cleanCards(int n){
-		System.out.println("clean cards, n = " + n);
 		for(int i = 0,j = 0;i < n;++i){
 			if(!marked[i]){
 				value[j] = value[i];
 				++j;
 			}else{
-				System.out.println("erase " + i);
 				marked[i] = false;
 			}
 		}
@@ -69,12 +67,11 @@ public class MainActivity extends ActionBarActivity {
         .setTitle("Notification")
         .setMessage("Game Finished")
         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) { 
-                // continue with delete
+            public void onClick(DialogInterface dialog, int which) {
             }
          })
         .setIcon(android.R.drawable.ic_dialog_alert)
-         .show();
+        .show();
 	}
 	
 	Client client;
@@ -170,8 +167,6 @@ public class MainActivity extends ActionBarActivity {
 		        		started = true;
 		        	}
 		        	
-		        	System.out.println("cont = " + cont);
-		        	
 		        	if(!marked[i2]){
 		                cards[i2].setColorFilter(Color.argb(50, 0, 0, 0));
 		                marked[i2] = true;
@@ -225,7 +220,6 @@ public class MainActivity extends ActionBarActivity {
 			                					N += 3;
 			                					
 			                					if(!Cards.test(value,N)){
-			                						//TODO:finir le jeu
 			                						endGame();
 			                					}
 			                				}
@@ -233,7 +227,6 @@ public class MainActivity extends ActionBarActivity {
 				                			cleanCards(N + 3);
 				                			
 				                			if(!Cards.test(value,N)){
-				                				//TODO:finir le jeu
 				                				endGame();
 				                			}
 				                		}
