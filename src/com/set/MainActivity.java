@@ -2,6 +2,8 @@ package com.set;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,12 +38,18 @@ public class MainActivity extends ActionBarActivity {
 	public int score = 0,score2 = 0;
 	ImageView scoreImage[] = new ImageView[3];
 	
+	int round;
+	
 	void cleanCards(int n){
+		System.out.println("clean cards, n = " + n);
 		for(int i = 0,j = 0;i < n;++i){
 			if(!marked[i]){
 				value[j] = value[i];
 				++j;
-			}else marked[i] = false;
+			}else{
+				System.out.println("erase " + i);
+				marked[i] = false;
+			}
 		}
 		
 		for(int i = 0;i < n - 3;++i)
@@ -54,6 +62,17 @@ public class MainActivity extends ActionBarActivity {
 	void endGame(){
 		chrono.stop();
 		endText.setText("Fin du jeu");
+		
+    	new AlertDialog.Builder(this)
+        .setTitle("Notification")
+        .setMessage("Game Finished")
+        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) { 
+                // continue with delete
+            }
+         })
+        .setIcon(android.R.drawable.ic_dialog_alert)
+         .show();
 	}
 	
 	Client client;
@@ -105,6 +124,8 @@ public class MainActivity extends ActionBarActivity {
 			marked[i] = false;
 			active[i] = false;
 		}
+		
+		round = 0;
 	}
 	
 	public void paintCards(ArrayList<Integer> deck){
@@ -248,6 +269,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	void startMulti(){
+		scoreText.setText("Score :\n0 | 0");
 		client = new Client(this,handler);
 		client.start();
 	}
