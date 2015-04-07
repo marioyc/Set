@@ -39,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
 	ImageView scoreImage[] = new ImageView[3];
 	
 	int round;
+	boolean end;
 	
 	void cleanCards(int n){
 		System.out.println("clean cards, n = " + n);
@@ -60,6 +61,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	void endGame(){
+		end = true;
 		chrono.stop();
 		endText.setText("Fin du jeu");
 		
@@ -126,6 +128,7 @@ public class MainActivity extends ActionBarActivity {
 		}
 		
 		round = 0;
+		end = false;
 	}
 	
 	public void paintCards(ArrayList<Integer> deck){

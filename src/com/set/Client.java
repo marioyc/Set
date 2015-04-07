@@ -16,21 +16,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 class Client extends Thread{
-	Handler handler;
 	MainActivity main;
 	
-	Client(MainActivity main, Handler handler){
+	Client(MainActivity main){
 		this.main = main;
-		this.handler = handler;
 	}
 	
 	public void run(){
-		/*handler.post(new Runnable(){
-			public void run(){
-				main.clean();
-			}
-		});*/
-		
 		Socket s = Net.establishConnection("10.0.2.2", 7777);
 		final BufferedReader in = Net.connectionIn(s);
 		final PrintWriter out = Net.connectionOut(s);
@@ -56,10 +48,7 @@ class Client extends Thread{
 			e.printStackTrace();
 		}
 		
-		//System.out.println(deck.toString());
-		System.out.println("start posDeck = " + main.posDeck);
-		
-		handler.post(new Runnable(){
+		main.handler.post(new Runnable(){
 			public void run(){
 				main.paintCards(main.deck);
 				
@@ -72,10 +61,7 @@ class Client extends Thread{
 					main.cards[i].setOnClickListener(new OnClickListener () {
 				        @Override
 				        public void onClick(View v) {
-				        	if(i2 >= main.N || main.active[i2] || main.cont >= 3) return;
-				        	
-				        
-				        	System.out.println("click posDeck = " + main.posDeck);
+				        	if(i2 >= main.N || main.active[i2] || main.cont >= 3 || main.end) return;
 				        	
 				        	if(!main.marked[i2]){
 				        		main.cards[i2].setColorFilter(Color.argb(50, 0, 0, 0));
@@ -125,26 +111,20 @@ class Client extends Thread{
 									}
 
 									System.out.println("Result = " + t.result);
-									System.out.println("result posDeck = " + main.posDeck);
 				                	
 				                	String[] tokens = t.result.split(" ");
 				                	int sc1 = 0,sc2 = 0;
-				                	
-				                	//System.out.println(tokens);
-				                	//System.out.println(tokens[0]);
 				                	
 				                	for(int i = 0;i < main.N;++i)
 				                		main.cards[i].setColorFilter(Color.argb(0, 0, 0, 0));
 				                	
 				                	if(tokens[0].equals("ERASE")){
-				                		System.out.println("erase posDeck = " + main.posDeck);
 					                	int c[] = new int[3];
 					                	
 					                	for(int i = 0;i < 3;++i){
 					                		c[i] = Integer.parseInt(tokens[i + 1]);
 					                		main.marked[ c[i] ] = true;
 					                	}
-					                	System.out.println("c = " + c[0] + " " + c[1] + " " + c[2]);
 					                	
 					                	sc1 = Integer.parseInt(tokens[4]);
 					                	sc2 = Integer.parseInt(tokens[5]);
@@ -158,14 +138,10 @@ class Client extends Thread{
 					                	main.N -= 3;
 					                	
 					                	final int[] c2 = c;
-					                	System.out.println("c2 = " + c2[0] + " " + c2[1] + " " + c2[2]);
-					                	System.out.println(main.marked[ c2[0] ] + " " + main.marked[ c2[1] ] + " " + main.marked[ c2[2] ]);
 					                	
 					                	// START POST DELAYED
 					                	main.handler.postDelayed(new Runnable(){
 				                			public void run(){
-				                				System.out.println(this);
-				                				System.out.println("postDelayed posDeck = " + main.posDeck);
 				                				for(int k = 0;k < 3;++k){
 				                					main.cards[ c2[k] ].setColorFilter(Color.argb(0, 0, 0, 0));
 				                					main.active[ c2[k] ] = false;
@@ -175,14 +151,7 @@ class Client extends Thread{
 				                					System.out.print(main.value[i] + " ");
 				                				System.out.println();
 				                				
-				                				for(int i = 0;i < main.N + 3;++i)
-				                					System.out.print(main.marked[i] + " ");
-				                				System.out.println();
-				                				//if(main.N == 12)
-				                				//	main.cleanCards(15);
 				                				main.cleanCards(main.N + 3);
-				                				
-				                				System.out.println("clean posDeck = " + main.posDeck);
 				                				
 				                				for(int i = 0;i < main.N;++i)
 				                					System.out.print(main.value[i] + " ");
@@ -207,21 +176,7 @@ class Client extends Thread{
 							                	for(int i = 0;i < main.N;++i)
 							                		auxValue = auxValue + " " + main.value[i];
 							                	
-							                	/*new AlertDialog.Builder(main)
-							                    .setTitle("Values")
-							                    .setMessage(auxValue)
-							                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-							                        public void onClick(DialogInterface dialog, int which) { 
-							                            // continue with delete
-							                        }
-							                     })
-							                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-							                        public void onClick(DialogInterface dialog, int which) { 
-							                            // do nothing
-							                        }
-							                     })
-							                    .setIcon(android.R.drawable.ic_dialog_alert)
-							                     .show();*/
+							                	System.out.println(auxValue);
 				                			}
 				                		}, 500);
 					                	// END POST DELAYED
@@ -235,7 +190,7 @@ class Client extends Thread{
 				                		sc1 = -1;
 				                		sc2 = -1;
 				                		
-				                		handler.postDelayed(new Runnable(){
+				                		main.handler.postDelayed(new Runnable(){
 				                			public void run(){
 				                				for(int i = 0;i < main.N;++i){
 				                					if(main.active[i]){
@@ -250,9 +205,6 @@ class Client extends Thread{
 				                	main.score += sc1;
 				                	main.score2 += sc2;
 				                	main.scoreText.setText("Score :\n" + main.score + " | " + main.score2);
-				                	
-				                	/*for(int i = 0;i < 15;++i)
-				                		main.marked[i] = false;*/
 				                	main.cont = 0;
 				                }
 				        	}else{
