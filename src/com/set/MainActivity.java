@@ -273,7 +273,7 @@ public class MainActivity extends ActionBarActivity {
 	
 	void startMulti(){
 		scoreText.setText("Score :\n0 | 0");
-		client = new Client(this,handler);
+		client = new Client(this);
 		client.start();
 	}
 	
